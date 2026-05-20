@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/Bionl/bam-filter/main/nextflow_schema.json",
+    "title": "bam-filter pipeline parameters",
+    "description": "Filter a BAM file by regions defined in a BED file",
+    "type": "object",
+    "definitions": {
+        "input_output_options": {
+            "title": "Input/output options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Define the input files and where results are written.",
+            "required": ["bam", "bed"],
+            "properties": {
+                "bam": {
+                    "type": "string",
+                    "format": "file-path",
+                    "mimetype": "application/octet-stream",
+                    "pattern": "^\\S+\\.bam$",
+                    "description": "Path to the input BAM file.",
+                    "help_text": "Aligned reads in BAM format. An index (.bai) will be created if not present.",
+                    "fa_icon": "fas fa-file"
+                },
+                "bed": {
+                    "type": "string",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "pattern": "^\\S+\\.bed$",
+                    "description": "Path to the BED file with regions to keep.",
+                    "help_text": "Tab-separated BED with at least three columns: chrom, start, end. Reads overlapping these intervals are retained.",
+                    "fa_icon": "fas fa-file-alt"
+                },
+                "outdir": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "Directory where results will be published.",
+                    "default": "results",
+                    "fa_icon": "fas fa-folder-open"
+                }
+            }
+        }
+    },
+    "allOf": [
+        { "$ref": "#/definitions/input_output_options" }
+    ]
+}
