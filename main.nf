@@ -10,23 +10,6 @@ params.bam     = null
 params.bed     = null
 params.outdir  = 'results'
 
-// Print help and exit if required params are missing
-if (!params.bam || !params.bed) {
-    log.error "Missing required parameters."
-    log.info  "Usage: nextflow run main.nf --bam <file.bam> --bed <regions.bed> [--outdir results]"
-    exit 1
-}
-
-log.info """
-=========================================
- bam-filter pipeline
-=========================================
- bam     : ${params.bam}
- bed     : ${params.bed}
- outdir  : ${params.outdir}
------------------------------------------
-""".stripIndent()
-
 
 process FILTER_BAM {
 
@@ -64,14 +47,25 @@ process FILTER_BAM {
 
 
 workflow {
+    // Validate params in DSL2-friendly scope
+    if( !params.bam || !params.bed ) {
+        log.error "Missing required parameters."
+        log.info  "Usage: nextflow run main.nf --bam <file.bam> --bed <regions.bed> [--outdir results]"
+        error "Missing required parameters: --bam and --bed"
+    }
+
+    log.info """
+    =========================================
+     bam-filter pipeline
+    =========================================
+     bam     : ${params.bam}
+     bed     : ${params.bed}
+     outdir  : ${params.outdir}
+    -----------------------------------------
+    """.stripIndent()
+
     bam_ch = Channel.fromPath(params.bam, checkIfExists: true)
     bed_ch = Channel.fromPath(params.bed, checkIfExists: true)
 
     FILTER_BAM(bam_ch, bed_ch)
-}
-
-workflow.onComplete {
-    log.info ( workflow.success
-        ? "\nDone. Filtered BAM is in: ${params.outdir}\n"
-        : "\nPipeline failed. See .nextflow.log for details.\n" )
 }
